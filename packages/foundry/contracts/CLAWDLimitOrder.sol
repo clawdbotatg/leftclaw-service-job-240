@@ -200,7 +200,7 @@ contract CLAWDLimitOrder is ReentrancyGuard {
         uint256 keeperFee = (usdcAmount * KEEPER_FEE_BPS) / BPS_DENOMINATOR;
         uint256 treasuryFee = (usdcAmount * TREASURY_FEE_BPS) / BPS_DENOMINATOR;
         uint256 buybackFee = (usdcAmount * BUYBACK_FEE_BPS) / BPS_DENOMINATOR;
-        uint256 swapAmount = (usdcAmount * SWAP_BPS) / BPS_DENOMINATOR;
+        uint256 swapAmount = usdcAmount - keeperFee - treasuryFee - buybackFee;
 
         IERC20(USDC).safeTransfer(msg.sender, keeperFee);
         IERC20(USDC).safeTransfer(TREASURY, treasuryFee);
