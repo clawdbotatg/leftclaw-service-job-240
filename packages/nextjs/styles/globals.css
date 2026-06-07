@@ -33,7 +33,7 @@
   --color-warning: #ffcf72;
   --color-error: #ff8863;
 
-  --radius-field: 1rem;
+  --radius-field: 0.5rem;
   --radius-box: 1rem;
   --tt-tailw: 6px;
 }
@@ -58,7 +58,7 @@
   --color-warning: #ffcf72;
   --color-error: #ff8863;
 
-  --radius-field: 1rem;
+  --radius-field: 0.5rem;
   --radius-box: 1rem;
 
   --tt-tailw: 6px;
@@ -106,7 +106,7 @@
 
 .btn {
   @apply shadow-md;
-  border-radius: 9999rem;
+  border-radius: 0.5rem;
 }
 
 .btn.btn-ghost {

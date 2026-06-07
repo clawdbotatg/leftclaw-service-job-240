@@ -41,7 +41,9 @@ export const BuybackPanel = () => {
       notification.success("Buyback executed!");
       await refetch();
     } catch (e) {
-      console.error(e);
+      const _msg = e instanceof Error ? e.message : String(e);
+      if (!_msg.includes("rejected") && !_msg.includes("denied"))
+        notification.error("Transaction failed. Please try again.");
     } finally {
       setTriggering(false);
     }

@@ -31,7 +31,9 @@ const KeeperOrderRow = ({ orderId }: { orderId: bigint }) => {
       notification.success(`Order #${orderId.toString()} executed`);
       await refetch();
     } catch (e) {
-      console.error(e);
+      const _msg = e instanceof Error ? e.message : String(e);
+      if (!_msg.includes("rejected") && !_msg.includes("denied"))
+        notification.error("Transaction failed. Please try again.");
     } finally {
       setExecuting(false);
     }

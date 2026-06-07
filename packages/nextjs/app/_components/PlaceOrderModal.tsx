@@ -99,7 +99,10 @@ export const PlaceOrderModal = ({ onClose }: Props) => {
       setApproveCooldown(true);
       await refetchAllowance();
     } catch (e) {
-      console.error(e);
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!msg.includes("rejected") && !msg.includes("denied")) {
+        notification.error("Approval failed. Please try again.");
+      }
     } finally {
       setApproving(false);
     }
@@ -116,7 +119,10 @@ export const PlaceOrderModal = ({ onClose }: Props) => {
       notification.success("Order placed!");
       onClose();
     } catch (e) {
-      console.error(e);
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!msg.includes("rejected") && !msg.includes("denied")) {
+        notification.error("Failed to place order. Please try again.");
+      }
     } finally {
       setPlacing(false);
     }
