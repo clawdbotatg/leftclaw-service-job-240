@@ -1,83 +1,63 @@
-# 🏗 Scaffold-ETH 2
+# CLAWD Limit Order
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+Permissionless onchain limit orders for buying CLAWD with USDC on Base. No backend, no upgradability, no admin — fully autonomous.
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+## What It Does
 
-> [!NOTE]
-> 🤖 Scaffold-ETH 2 is AI-ready! It has everything agents need to build on Ethereum. Check `.agents/`, `.claude/`, `.opencode` or `.cursor/` for more info.
+Users deposit USDC and specify a target CLAWD/USDC price. Any keeper can execute the order when the 30-minute Uniswap V3 TWAP hits the limit price. A flat 0.3% protocol fee is split: 0.1% to the executing keeper, 0.1% to the treasury, 0.1% accumulated in a permissionless buyback reserve.
 
-⚙️ Built using NextJS, RainbowKit, Foundry, Wagmi, Viem, and Typescript.
+## Live
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+Frontend: deployed on IPFS via bgipfs — see `DEPLOYMENT.md`
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+## Contract
 
-## Requirements
+**CLAWDLimitOrder** on Base mainnet:
+- Address: [`0xf32db9C489273713D037312E7b689e885Aa50F58`](https://basescan.org/address/0xf32db9C489273713D037312E7b689e885Aa50F58)
+- Verified on [Sourcify](https://sourcify.dev/#/lookup/0xf32db9C489273713D037312E7b689e885Aa50F58)
+- No owner, no admin, no upgradeability
 
-Before you begin, you need to install the following tools:
+### Key Addresses (Base)
+| Token | Address |
+|-------|---------|
+| USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+| CLAWD | `0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07` |
+| CLAWD/USDC Pool (1% fee) | `0xb72A6e1091D43e19284050b7132e0646509EBa5d` |
+| Uniswap SwapRouter02 | `0x2626664c2603336E57B271c5C0b26F421741e481` |
+| Treasury | `0xcfb32a7d01ca2b4b538c83b2b38656d3502d76ea` |
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+### Fee Structure
+| Fee | BPS | Description |
+|-----|-----|-------------|
+| Keeper | 10 (0.1%) | Paid immediately to executor |
+| Treasury | 10 (0.1%) | Paid immediately to treasury |
+| Buyback | 10 (0.1%) | Accumulated, burned via `executeBuyback()` |
+| Swap | 9970 (99.7%) | Swapped to CLAWD for user |
 
-## Quickstart
+## Pages
 
-To get started with Scaffold-ETH 2, follow the steps below:
+- `/` — Order Dashboard: place and cancel orders, view your order history
+- `/keeper` — Keeper Dashboard: execute open orders, trigger CLAWD buybacks
 
-1. Install dependencies if it was skipped in CLI:
+## Running Locally
 
-```
-cd my-dapp-example
+```bash
 yarn install
-```
 
-2. Run a local network in the first terminal:
+# Start local chain (fork Base)
+yarn fork --network base
 
-```
-yarn chain
-```
-
-This command starts a local Ethereum network using Foundry. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/foundry/foundry.toml`.
-
-3. On a second terminal, deploy the test contract:
-
-```
+# Deploy contracts locally
 yarn deploy
-```
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/foundry/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/foundry/script` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
+# Start frontend
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+## Tech Stack
 
-Run smart contract test with `yarn foundry:test`
-
-- Edit your smart contracts in `packages/foundry/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/foundry/script`
-
-
-## Documentation
-
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
-
-To know more about its features, check out our [website](https://scaffoldeth.io).
-
-## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+- Scaffold-ETH 2 (Foundry flavor)
+- Next.js (static export → IPFS)
+- Uniswap V3 TWAP oracle + swap
+- bgipfs for decentralized frontend hosting
+- Base mainnet
